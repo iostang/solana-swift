@@ -13,23 +13,30 @@ public extension SolanaSDK {
     class TokensListParser {
         public init() {}
         public func parse(network: String) -> Single<[Token]> {
-            RxAlamofire.request(.get, "https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json")
-                .validate()
-                .responseData()
-                .take(1)
-                .asSingle()
-                .map {(response, data) -> TokensList in
-                    let list = try JSONDecoder().decode(TokensList.self, from: data)
-                    return list
-                }
-                .catch { _ in
-                    // get json file
-                    let bundle = Bundle(for: TokensListParser.self)
-                    let path = bundle.path(forResource: network + ".tokens", ofType: "json")
-                    let jsonData = try Data(contentsOf: URL(fileURLWithPath: path!))
-                    
-                    return .just(try JSONDecoder().decode(TokensList.self, from: jsonData))
-                }
+            
+            let bundle = Bundle.init(path:Bundle(for: TokensListParser.self).path(forResource: "json", ofType: "bundle")!)!
+            let path = bundle.path(forResource: "solana_token_list", ofType: "json")!
+            let data = NSData.init(contentsOfFile: path)! as Data
+            
+            let list = try! JSONDecoder().decode(TokensList.self, from: data)
+            return Single.just(list)
+//            RxAlamofire.request(.get, "https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json")
+//                .validate()
+//                .responseData()
+//                .take(1)
+//                .asSingle()
+//                .map {(response, data) -> TokensList in
+//                    let list = try JSONDecoder().decode(TokensList.self, from: data)
+//                    return list
+//                }
+//                .catch { _ in
+//                    // get json file
+//                    let bundle = Bundle(for: TokensListParser.self)
+//                    let path = bundle.path(forResource: network + ".tokens", ofType: "json")
+//                    let jsonData = try Data(contentsOf: URL(fileURLWithPath: path!))
+//
+//                    return .just(try JSONDecoder().decode(TokensList.self, from: jsonData))
+//                }
                 .map {list -> TokensList in
                     var list = list
                     // map tags
@@ -42,20 +49,20 @@ public extension SolanaSDK {
                     }
                     
                     // renBTC for devnet
-                    if network == "devnet" {
-                        tokens.append(
-                            .init(
-                                _tags: nil,
-                                chainId: 101,
-                                address: "FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD",
-                                symbol: "renBTC",
-                                name: "renBTC",
-                                decimals: 8,
-                                logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5/logo.png",
-                                extensions: .init(website: "https://renproject.io/", bridgeContract: nil, assetContract: nil, address: nil, explorer: nil, twitter: nil, github: nil, medium: nil, tgann: nil, tggroup: nil, discord: nil, serumV3Usdt: nil, serumV3Usdc: "74Ciu5yRzhe8TFTHvQuEVbFZJrbnCMRoohBK33NNiPtv", coingeckoId: "renbtc", imageUrl: nil, description: nil)
-                            )
-                        )
-                    }
+//                    if network == "devnet" {
+//                        tokens.append(
+//                            .init(
+//                                _tags: nil,
+//                                chainId: 101,
+//                                address: "FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD",
+//                                symbol: "renBTC",
+//                                name: "renBTC",
+//                                decimals: 8,
+//                                logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5/logo.png",
+//                                extensions: .init(website: "https://renproject.io/", bridgeContract: nil, assetContract: nil, address: nil, explorer: nil, twitter: nil, github: nil, medium: nil, tgann: nil, tggroup: nil, discord: nil, serumV3Usdt: nil, serumV3Usdc: "74Ciu5yRzhe8TFTHvQuEVbFZJrbnCMRoohBK33NNiPtv", coingeckoId: "renbtc", imageUrl: nil, description: nil)
+//                            )
+//                        )
+//                    }
                     
                     list.tokens = tokens
                     return list
