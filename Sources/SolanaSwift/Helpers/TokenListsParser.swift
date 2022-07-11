@@ -14,11 +14,10 @@ public extension SolanaSDK {
         public init() {}
         public func parse(network: String) -> Single<[Token]> {
             
-            let bundle = Bundle.init(path:Bundle(for: TokensListParser.self).path(forResource: "json", ofType: "bundle")!)!
-            let path = bundle.path(forResource: "solana_token_list", ofType: "json")!
-            let data = NSData.init(contentsOfFile: path)! as Data
-            
-            let list = try! JSONDecoder().decode(TokensList.self, from: data)
+            let bundle = Bundle(for: TokensListParser.self)
+            let path = bundle.path(forResource: "solana_token_list", ofType: "json")
+            let jsonData = try! Data(contentsOf: URL(fileURLWithPath: path!))
+            let list = try! JSONDecoder().decode(TokensList.self, from: jsonData)
             return Single.just(list)
 //            RxAlamofire.request(.get, "https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json")
 //                .validate()
