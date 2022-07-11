@@ -26,7 +26,7 @@ extension SolanaSDK {
         case sollet, wormhole
     }
     
-    public struct Token: Hashable, Decodable {
+    public struct Token: Hashable, Decodable, Encodable {
         public init(_tags: [String]?, chainId: Int, address: String, symbol: String, name: String, decimals: SolanaSDK.Decimals, logoURI: String?, tags: [SolanaSDK.TokenTag] = [], extensions: SolanaSDK.TokenExtensions?, isNative: Bool = false) {
             self._tags = _tags
             self.chainId = chainId
@@ -54,6 +54,19 @@ extension SolanaSDK {
         
         enum CodingKeys: String, CodingKey {
             case chainId, address, symbol, name, decimals, logoURI, extensions, _tags = "tags"
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(chainId, forKey: .chainId)
+            try container.encode(address, forKey: .address)
+            try container.encode(symbol, forKey: .symbol)
+            try container.encode(name, forKey: .name)
+            try container.encode(decimals, forKey: .decimals)
+            
+            try container.encode(logoURI, forKey: .logoURI)
+            try container.encode(extensions, forKey: .extensions)
+            try container.encode(_tags, forKey: ._tags)
         }
         
         public static func unsupported(
@@ -134,7 +147,7 @@ extension SolanaSDK {
         }
     }
     
-    public struct TokenExtensions: Hashable, Decodable {
+    public struct TokenExtensions: Hashable, Codable {
         let website: String?
         let bridgeContract: String?
         let assetContract: String?
