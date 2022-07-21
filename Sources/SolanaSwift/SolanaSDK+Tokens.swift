@@ -30,7 +30,12 @@ extension SolanaSDK {
                 }
                 let parser = TokensListParser()
                 return parser.parse(network: self.endpoint.network.cluster)
-                    .do(onSuccess: {[weak self] in self?.supportedTokensCache = $0})
+                    .do(onSuccess: {[weak self] in
+                        //去重
+                        var existingSymbols: Set<String> = []
+                        var tokens = $0.excludingSpecialTokens().filter { existingSymbols.insert($0.symbol).inserted }
+                        self?.supportedTokensCache = tokens
+                    })
             }
     }
     
