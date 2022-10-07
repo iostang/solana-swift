@@ -23,8 +23,8 @@ extension SolanaSDK {
         
         public static var defaultEndpoints: [Self] {
             var endpoints: [Self] = [
-                .init(address: "https://solana-api.projectserum.com", network: .mainnetBeta),
-                .init(address: "https://api.mainnet-beta.solana.com", network: .mainnetBeta)
+//                .init(address: "https://solana-api.projectserum.com", network: .mainnetBeta),
+                .init(address: "https://solana-mainnet.g.alchemy.com/v2/kHjqxy68NcFsGU5YlWB4nTKAk-P8gOAS", network: .mainnetBeta)
 //                .init(address: "https://datahub-proxy.p2p.org", network: .mainnetBeta),
 //                .init(address: "https://api.devnet.solana.com", network: .devnet),
 //                .init(address: "https://api.testnet.solana.com", network: .testnet)

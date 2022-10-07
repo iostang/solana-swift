@@ -63,7 +63,7 @@ public extension SolanaSDK {
     @available(*, deprecated, renamed: "getSignaturesForAddress(address:configs:)", message: "use getSignaturesForAddress instead.This method is expected to be removed in solana-core v1.8.")
     func getConfirmedSignaturesForAddress2(account: String, configs: RequestConfiguration? = nil) -> Single<[SignatureInfo]> {
         request(
-            overridingEndpoint: "https://api.mainnet-beta.solana.com",
+            overridingEndpoint: "https://solana-mainnet.g.alchemy.com/v2/kHjqxy68NcFsGU5YlWB4nTKAk-P8gOAS",
             parameters: [account, configs]
         )
     }
@@ -76,7 +76,7 @@ public extension SolanaSDK {
     @available(*, deprecated, renamed: "getTransaction(transactionSignature:)", message: "use getTransaction instead This method is expected to be removed in solana-core v1.8.")
     func getConfirmedTransaction(transactionSignature: String) -> Single<TransactionInfo> {
         request(
-            overridingEndpoint: "https://api.mainnet-beta.solana.com",
+            overridingEndpoint: "https://solana-mainnet.g.alchemy.com/v2/kHjqxy68NcFsGU5YlWB4nTKAk-P8gOAS",
             parameters: [transactionSignature, "jsonParsed"]
         )
     }
