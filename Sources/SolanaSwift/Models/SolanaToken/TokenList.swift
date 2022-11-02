@@ -17,7 +17,7 @@ extension SolanaSDK {
         var tokens: [Token]
     }
     
-    public struct TokenTag: Hashable, Decodable {
+    public struct TokenTag: Hashable, Codable {
         public var name: String
         public var description: String
     }
@@ -27,7 +27,7 @@ extension SolanaSDK {
     }
     
     public struct Token: Hashable, Decodable, Encodable {
-        public init(_tags: [String]?, chainId: Int, address: String, symbol: String, name: String, decimals: SolanaSDK.Decimals, logoURI: String?, tags: [SolanaSDK.TokenTag] = [], extensions: SolanaSDK.TokenExtensions?, isNative: Bool = false) {
+        public init(_tags: [String]?, chainId: Int, address: String, symbol: String, name: String, decimals: SolanaSDK.Decimals, logoURI: String?, tags: [SolanaSDK.TokenTag] = [], extensions: SolanaSDK.TokenExtensions?, isNative: Bool) {
             self._tags = _tags
             self.chainId = chainId
             self.address = address
@@ -50,10 +50,10 @@ extension SolanaSDK {
         public let logoURI: String?
         public var tags: [TokenTag] = []
         public let extensions: TokenExtensions?
-        public private(set) var isNative = false
+        public let isNative:Bool?
         
         enum CodingKeys: String, CodingKey {
-            case chainId, address, symbol, name, decimals, logoURI, extensions, _tags = "tags"
+            case chainId, address, symbol, name, decimals, logoURI, extensions, _tags = "tag", isNative
         }
         
         public func encode(to encoder: Encoder) throws {
@@ -66,7 +66,8 @@ extension SolanaSDK {
             
             try container.encode(logoURI, forKey: .logoURI)
             try container.encode(extensions, forKey: .extensions)
-            try container.encode(_tags, forKey: ._tags)
+            try container.encode(tags, forKey: ._tags)
+            try container.encode(isNativeSOL, forKey: .isNative)
         }
         
         public static func unsupported(
@@ -83,7 +84,8 @@ extension SolanaSDK {
                 decimals: decimals,
                 logoURI: nil,
                 tags: [],
-                extensions: nil
+                extensions: nil,
+                isNative:false
             )
         }
         
@@ -111,7 +113,8 @@ extension SolanaSDK {
                 name: "renBTC",
                 decimals: 8,
                 logoURI: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5/logo.png",
-                extensions: .init(website: "https://renproject.io/", bridgeContract: nil, assetContract: nil, address: nil, explorer: nil, twitter: nil, github: nil, medium: nil, tgann: nil, tggroup: nil, discord: nil, serumV3Usdt: nil, serumV3Usdc: "74Ciu5yRzhe8TFTHvQuEVbFZJrbnCMRoohBK33NNiPtv", coingeckoId: "renbtc", imageUrl: nil, description: nil)
+                extensions: .init(website: "https://renproject.io/", bridgeContract: nil, assetContract: nil, address: nil, explorer: nil, twitter: nil, github: nil, medium: nil, tgann: nil, tggroup: nil, discord: nil, serumV3Usdt: nil, serumV3Usdc: "74Ciu5yRzhe8TFTHvQuEVbFZJrbnCMRoohBK33NNiPtv", coingeckoId: "renbtc", imageUrl: nil, description: nil),
+                isNative:false
             )
         }
         
@@ -138,7 +141,7 @@ extension SolanaSDK {
         }
         
         public var isNativeSOL: Bool {
-            symbol == "SOL" && isNative
+            symbol == "SOL" && (isNative ?? false)
         }
         
         public var isRenBTC: Bool {
